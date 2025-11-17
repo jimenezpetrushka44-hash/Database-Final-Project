@@ -1,0 +1,125 @@
+
+CREATE TABLE Users (
+    UserID    INT AUTO_INCREMENT PRIMARY KEY,
+    FirstName  VARCHAR(250) NOT NULL,
+    LastName varchar(250) NOT NULL,
+    Username  VARCHAR(50) NOT NULL UNIQUE,
+    UserPassword  VARCHAR(255) NOT NULL,
+	Email varchar(250) not null,
+	Phone varchar(50)not null
+);
+
+
+CREATE TABLE Roles (
+    RoleID   INT AUTO_INCREMENT PRIMARY KEY,
+    RoleName VARCHAR(100) NOT NULL UNIQUE
+);
+
+
+CREATE TABLE User_Roles (
+    User_ID INT NOT NULL,
+    RoleID  INT NOT NULL,
+
+    PRIMARY KEY (User_ID, RoleID),
+
+    FOREIGN KEY (User_ID) REFERENCES Users(UserID),
+    FOREIGN KEY (RoleID) REFERENCES Roles(RoleID)
+);
+
+
+Create table BillingInfo (
+          BillingID Int auto_increment primary key,
+          UserID INT not null,
+          CardNumber varchar(250) not null,
+          
+          Foreign key (UserID) References Users(UserID)
+);
+
+
+Create Table Hotels (
+		HotelID Int auto_increment primary key,
+        HotelName Varchar(250) NOT NULL,
+        HotelLocation varchar(250) NOT NULL,
+        HotelStatus enum('Open', 'Closed', 'Under Maintenance') not null default 'Open'
+);
+
+Create table Floors (
+        FloorID int auto_increment primary key,
+        HotelID int not null,
+        FloorStatus enum('Available', 'Non-Available') not null default 'Available',
+        
+        Foreign key (HotelID) References Hotels(HotelID)
+);
+
+Create table RoomType(
+         TypeID int auto_increment primary key,
+         TypeName varchar(250) not null,
+         TypePrice decimal not null
+         
+         
+);
+
+Create table Rooms (
+		RoomID Int auto_increment primary key,
+        FloorID int not null,
+        TypeID int not null,
+        RoomStatus varchar(250),
+        
+        foreign key(FloorID) References Floors(FloorID),
+        foreign key(TypeID) References RoomType(TypeID)
+        
+);
+
+
+
+Create table RoomAssets(
+        AssetID int auto_increment primary key,
+        AssetName varchar(250),
+        AssetStatus enum('Working', 'Under Maintenance', 'Damaged') not null default 'Working'
+);
+
+create table AssetsInRooms(
+		RoomID int not null,
+        AssetID int not null,
+        
+        primary key(RoomID, AssetID),
+		FOREIGN KEY (RoomID) REFERENCES Rooms(RoomID),
+        FOREIGN KEY (AssetID) REFERENCES RoomAssets(AssetID)
+);
+
+Create table Bookings (
+		BookingID int auto_increment primary key,
+        UserID int,
+        RoomID int,
+        BillingID int,
+        DateofBooking date not null,
+        EndofBooking date not null,
+        
+        foreign key(UserID) References Users(UserID),
+        foreign key(RoomID) References Rooms(RoomID),
+        foreign key(BillingID) References BillingInfo(BillingID)
+        
+        
+);
+
+Create table ExtraAssets(
+	ExtraAssetID int auto_increment primary key,
+    ExtraAssetName varchar(250) not null,
+    ExtraAssetStatus enum('Working', 'Under Maintenance', 'Damaged') not null default 'Working'
+    
+    
+);
+
+Create table BookingExtraAssets(
+      BookingID int not null,
+      ExtraAssetID int not null,
+      ExtraAssetPrice decimal not null,
+      
+      primary key(BookingID, ExtraAssetID),
+      foreign key(BookingID) References Bookings(BookingID),
+      foreign key(ExtraAssetID) References ExtraAssets(ExtraAssetID)
+      
+);
+
+
+
